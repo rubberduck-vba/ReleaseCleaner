@@ -6,11 +6,28 @@ init:
 
 image:
   - Visual Studio 2017
-  - Ubuntu
+  # Ubuntu configuration currently does not support assembly:InternalsVisibleTo
+  # - Ubuntu
+
+platform: Any CPU
+configuration: Release
+
+for:
+-
+  matrix:
+    except:
+      - image: Ubuntu
+  before_build:
+    - nuget restore
 
 skip_tags: true
 build:
   project: ReleaseCleaner.sln
+
+test:
+  assemblies:
+    only:
+      - ReleaseCleanerTests.dll
 
 # Push Notifications about build status to VBA Rubberducking
 notifications:
