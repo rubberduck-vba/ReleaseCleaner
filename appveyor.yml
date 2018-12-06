@@ -1,0 +1,17 @@
+version: '0.0.1-alpha'
+
+# enfoce CRLF fixing
+init:
+  - git config --global core.autocrlf true
+
+skip_tags: true
+build:
+  project: ReleaseCleaner.sln
+
+# Push Notifications about build status to VBA Rubberducking
+notifications:
+  - provider: Webhook
+    url: http://stats.zomis.net/GithubHookSEChatService/hooks/github/payload?roomId=14929
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: false
