@@ -6,8 +6,7 @@ init:
 
 image:
   - Visual Studio 2017
-  # Ubuntu configuration currently does not support assembly:InternalsVisibleTo
-  # - Ubuntu
+  - Ubuntu
 
 platform: Any CPU
 configuration: Release
@@ -19,6 +18,11 @@ for:
       - image: Ubuntu
   before_build:
     - nuget restore
+
+# Ubuntu configuration currently does not support assembly:InternalsVisibleTo
+matrix:
+  allow_failures:
+    - image: Ubuntu
 
 skip_tags: true
 build:
