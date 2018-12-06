@@ -4,6 +4,10 @@ version: '0.0.1-alpha'
 init:
   - git config --global core.autocrlf true
 
+image:
+  - Visual Studio 2017
+  - Ubuntu
+
 skip_tags: true
 build:
   project: ReleaseCleaner.sln
