@@ -2,10 +2,13 @@ using NUnit.Framework;
 
 using System;
 using ReleaseCleaner.Invocation;
+using CUT = ReleaseCleaner.Invocation.CommandLine;
 
-namespace Tests.Invocation
+namespace ReleaseCleaner.Invocation
 {
     [TestFixture]
+    [Category("UnitTest")]
+    [Category("Argument Parsing")]
     public class ArgumentParserTests 
     {
         [Test]
@@ -26,14 +29,14 @@ namespace Tests.Invocation
         [TestCase("--match v2.2.0.* --invert --project Rubberduck")]
         public void EmptyArgs_IsRejected(string commandLine) 
         {
-            Assert.Throws<ArgumentException>(() => Arguments.Parse(commandLine.Split(' ')));
+            Assert.Throws<ArgumentException>(() => CUT.Parse(commandLine.Split(' ')));
         }
 
         [Test]
         [TestCase("rubberduck-vba/Rubberduck -m 2.2.0*", "rubberduck-vba", "Rubberduck", false, new string[]{"2.2.0*"})]
         public void ValidArgs_AreCorrectlyParsed(string commandLine, string owner, string repo, bool invert, string[] matchers)
         {
-            var result = Arguments.Parse(commandLine.Split(' '));
+            var (result, _) = CUT.Parse(commandLine.Split(' '));
             Assert.AreEqual(owner, result.ProjectOwner);
             Assert.AreEqual(repo, result.ProjectName);
             Assert.AreEqual(invert, result.InvertedMatching);

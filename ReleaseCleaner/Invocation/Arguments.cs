@@ -2,66 +2,90 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReleaseCleaner.Invocation 
+namespace ReleaseCleaner.Invocation
 {
-    internal class Arguments 
+    internal class Arguments
     {
-        // private ctor to disable instantiation except through the factory method
-        private Arguments() {}
-
-        public static Arguments Parse(string[] actualArgs)
+        public Arguments(ArgumentsBuilder builder)
         {
-            var matchers = new List<string>();
-            var result = new Arguments();
-            for (int i = 0; i < actualArgs.Length; i++) {
-                switch(actualArgs[i])
-                {
-                    case "-v": 
-                    case "--invert":
-                        result.InvertedMatching = true;
-                        break;
-                    case "-m":
-                    case "--match":
-                        if (i == actualArgs.Length) { throw new ArgumentException(nameof(CleanReleases)); }
-                        matchers.Add(actualArgs[++i]);
-                        break;
-                    case "-o":
-                    case "--owner":
-                        if (i == actualArgs.Length) { throw new ArgumentException(nameof(ProjectOwner)); }
-                        result.ProjectOwner = actualArgs[++i];
-                        break;
-                    case "-p":
-                    case "--project":
-                        if (i == actualArgs.Length) { throw new ArgumentException(nameof(ProjectName)); }
-                        result.ProjectName = actualArgs[++i];
-                        break;
-                    default:
-                        // attempt to parse given arg as owner/name
-                        var spec = actualArgs[i].Split('/');
-                        if (spec.Length != 2) { throw new ArgumentException("Owner Specification"); }
-                        (result.ProjectOwner, result.ProjectName) = (spec[0], spec[1]);
-                        break;
-                }
-            }
-            result.CleanReleases = matchers.ToArray();
-            // if any of the required properties is unset
-            if (!result.IsValid())
+            if (!builder.IsValid())
             {
-                throw new ArgumentException("Missing Required Argument(s)");
+                // BAD PROGRAMMER
+                throw new InvalidOperationException();
             }
-            return result;
-        }
-
-        private bool IsValid()
-        {
-            return CleanReleases != default && CleanReleases.Any()
-                && ProjectName != default
-                && ProjectOwner != default;
+            CleanReleases = builder.CleanReleases.ToArray();
+            InvertedMatching = builder.InvertedMatching;
+            ProjectName = builder.Project;
+            ProjectOwner = builder.Owner;
         }
 
         public string[] CleanReleases { get; private set; }
         public bool InvertedMatching { get; private set; }
         public string ProjectName { get; private set; }
         public string ProjectOwner { get; private set; }
+
+    }
+    public class ArgumentsBuilder
+    {
+
+        private List<string> cleanReleases = new List<string>();
+        public IReadOnlyList<string> CleanReleases
+        {
+            get
+            {
+                return cleanReleases.AsReadOnly();
+            }
+        }
+        public bool InvertedMatching { get; private set; }
+        public string Project { get; set; }
+        public string Owner { get; set; }
+        public ArgumentsBuilder() { }
+
+        internal bool IsValid()
+        {
+            return CleanReleases.Any()
+                && Project != default
+                && Owner != default;
+        }
+
+        internal void SetOwner(string owner)
+        {
+            if (Owner != default)
+            {
+                // disallow setting that multiple times
+                throw new InvalidOperationException();
+            }
+            Owner = owner;
+        }
+
+        internal void AddMatcher(string releaseMatcher)
+        {
+            cleanReleases.Add(releaseMatcher);
+        }
+
+        internal void SetProject(string projectName)
+        {
+            if (Project != default)
+            {
+                // disallow setting that multiple times
+                throw new InvalidOperationException();
+            }
+            Project = projectName;
+        }
+
+        internal void Inverted()
+        {
+            // ignore multiple sets
+            InvertedMatching = true;
+        }
+
+        internal Arguments Build()
+        {
+            if (!IsValid())
+            {
+                throw new InvalidOperationException();
+            }
+            return new Arguments(this);
+        }
     }
 }

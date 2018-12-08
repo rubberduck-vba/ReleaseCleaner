@@ -19,11 +19,6 @@ for:
   before_build:
     - nuget restore
 
-# Ubuntu configuration currently does not support assembly:InternalsVisibleTo
-matrix:
-  allow_failures:
-    - image: Ubuntu
-
 skip_tags: true
 build:
   project: ReleaseCleaner.sln
