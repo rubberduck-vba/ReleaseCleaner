@@ -3,6 +3,8 @@ using NUnit.Framework;
 using System;
 using ReleaseCleaner.Invocation;
 using CUT = ReleaseCleaner.Invocation.CommandLine;
+using Moq;
+using ReleaseCleaner.Input;
 
 namespace ReleaseCleaner.Invocation
 {
@@ -29,14 +31,17 @@ namespace ReleaseCleaner.Invocation
         [TestCase("--match v2.2.0.* --invert --project Rubberduck")]
         public void EmptyArgs_IsRejected(string commandLine) 
         {
-            Assert.Throws<ArgumentException>(() => CUT.Parse(commandLine.Split(' ')));
+            Assert.Throws<ArgumentException>(() => CUT.Parse(commandLine.Split(' '), null));
         }
 
         [Test]
         [TestCase("rubberduck-vba/Rubberduck -m 2.2.0*", "rubberduck-vba", "Rubberduck", false, new string[]{"2.2.0*"})]
         public void ValidArgs_AreCorrectlyParsed(string commandLine, string owner, string repo, bool invert, string[] matchers)
         {
-            var (result, _) = CUT.Parse(commandLine.Split(' '));
+            var console = new Mock<IConsole>();
+            console.Setup(c => c.ReadPassword(It.IsAny<string>())).Returns("PW");
+            console.Setup(c => c.ReadUsername()).Returns("User");
+            var (result, _) = CUT.Parse(commandLine.Split(' '), console.Object);
             Assert.AreEqual(owner, result.ProjectOwner);
             Assert.AreEqual(repo, result.ProjectName);
             Assert.AreEqual(invert, result.InvertedMatching);

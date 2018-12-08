@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
+using ReleaseCleaner.Input;
 
 namespace ReleaseCleaner.Invocation
 {
     internal static class CommandLine
     {
-        public static (Arguments, Authentication) Parse(string[] actualArgs)
+        public static (Arguments, Authentication) Parse(string[] actualArgs, IConsole console)
         {
             var matchingBehavior = new ArgumentsBuilder();
-            var auth = new AuthenticationBuilder();
+            var auth = new AuthenticationBuilder(console);
             for (int i = 0; i < actualArgs.Length; i++)
             {
                 switch (actualArgs[i])

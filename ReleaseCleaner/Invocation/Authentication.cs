@@ -9,7 +9,8 @@ namespace ReleaseCleaner.Invocation
     {
         public Credentials Credentials { get; private set; }
 
-        public Authentication(AuthenticationBuilder builder, IConsole console) {
+        public Authentication(AuthenticationBuilder builder, IConsole console)
+        {
             if (!builder.IsValid())
             {
                 // BAD PROGRAMMER
@@ -46,7 +47,17 @@ namespace ReleaseCleaner.Invocation
         public string Password { get; internal set; }
         public string Username { get; internal set; }
 
-        public AuthenticationBuilder() {}
+        private readonly IConsole console;
+
+        public AuthenticationBuilder()
+        {
+            this.console = new ReleaseCleaner.Input.Console();
+        }
+
+        public AuthenticationBuilder(IConsole console) 
+        {
+            this.console = console;
+        }
 
         internal bool IsValid()
         {
@@ -58,7 +69,7 @@ namespace ReleaseCleaner.Invocation
 
         public void SetToken(string token)
         {
-            if (Token != default) 
+            if (Token != default)
             {
                 // disallow setting that multiple times
                 throw new InvalidOperationException();
@@ -67,9 +78,9 @@ namespace ReleaseCleaner.Invocation
             Token = token;
         }
 
-        public void SetUsername(string username) 
+        public void SetUsername(string username)
         {
-            if (Username != default) 
+            if (Username != default)
             {
                 // disallow setting that multiple times
                 throw new InvalidOperationException();
@@ -91,11 +102,11 @@ namespace ReleaseCleaner.Invocation
 
         public Authentication Build()
         {
-            if (!IsValid()) 
+            if (!IsValid())
             {
                 throw new InvalidOperationException();
             }
-            return new Authentication(this, new Console());
+            return new Authentication(this, console);
         }
     }
 }
