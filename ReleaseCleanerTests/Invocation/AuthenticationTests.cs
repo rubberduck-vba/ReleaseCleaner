@@ -42,9 +42,12 @@ namespace ReleaseCleaner.Invocation
                 .Verifiable();
 
             var empty = new AuthenticationBuilder();
-            var result = new CUT(empty, console.Object);
+            var result = new CUT(empty, console.Object).Credentials;
 
-            Assert.AreEqual(new Credentials(username, password), result.Credentials);
+            var expected = new Credentials(username, password);
+            Assert.AreEqual(expected.Login, result.Login);
+            Assert.AreEqual(expected.Password, result.Password);
+            Assert.AreEqual(expected.AuthenticationType, result.AuthenticationType);
         }
 
         [Test]
@@ -60,9 +63,12 @@ namespace ReleaseCleaner.Invocation
             var builder = new AuthenticationBuilder();
             builder.SetUsername(username);
 
-            var result = new CUT(builder, console.Object);
-
-            Assert.AreEqual(new Credentials(username, password), result.Credentials);
+            var result = new CUT(builder, console.Object).Credentials;
+            
+            var expected = new Credentials(username, password);
+            Assert.AreEqual(expected.Login, result.Login);
+            Assert.AreEqual(expected.Password, result.Password);
+            Assert.AreEqual(expected.AuthenticationType, result.AuthenticationType);
         }
 
         [Test]
@@ -75,9 +81,12 @@ namespace ReleaseCleaner.Invocation
             builder.SetUsername(username);
             builder.SetPassword(password);
 
-            var result = new CUT(builder, console.Object);
+            var result = new CUT(builder, console.Object).Credentials;
 
-            Assert.AreEqual(new Credentials(username, password), result.Credentials);
+            var expected = new Credentials(username, password);
+            Assert.AreEqual(expected.Login, result.Login);
+            Assert.AreEqual(expected.Password, result.Password);
+            Assert.AreEqual(expected.AuthenticationType, result.AuthenticationType);
         }
 
         [Test]
@@ -88,21 +97,22 @@ namespace ReleaseCleaner.Invocation
             var builder = new AuthenticationBuilder();
             builder.SetToken(token);
 
-            var result = new CUT(builder, console.Object);
+            var result = new CUT(builder, console.Object).Credentials;
 
-            Assert.AreEqual(new Credentials(token), result.Credentials);
+            var expected = new Credentials(token);
+            Assert.AreEqual(expected.Login, result.Login);
+            Assert.AreEqual(expected.Password, result.Password);
+            Assert.AreEqual(expected.AuthenticationType, result.AuthenticationType);
         }
 
         [Test]
         public void InvalidAuthBuilder_ProvokesException()
         {
-            var builder = new Mock<AuthenticationBuilder>();
-            builder.Setup(b => b.IsValid()).Returns(false).Verifiable();
+            var builder = new AuthenticationBuilder();
+            // only setting a password makes the builder invalid
+            builder.SetPassword("");
 
-            Assert.Throws<InvalidOperationException>(() => new CUT(builder.Object, console.Object));
-
-            builder.VerifyAll();
-            builder.VerifyNoOtherCalls();
+            Assert.Throws<InvalidOperationException>(() => new CUT(builder, console.Object));
         }
     }
 }
