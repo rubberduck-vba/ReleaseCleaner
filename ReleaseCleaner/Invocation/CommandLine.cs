@@ -50,6 +50,9 @@ namespace ReleaseCleaner.Invocation
                         if (i == actualArgs.Length) { throw new ArgumentException(); }
                         auth.SetToken(actualArgs[++i]);
                         break;
+                    case "--orphans":
+                        matchingBehavior.Orphans();
+                        break;
                     default:
                         // attempt to parse given arg as owner/name
                         var spec = actualArgs[i].Split('/');

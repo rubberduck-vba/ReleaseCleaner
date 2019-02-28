@@ -15,12 +15,14 @@ namespace ReleaseCleaner.Invocation
             }
             CleanReleases = builder.CleanReleases.ToArray();
             InvertedMatching = builder.InvertedMatching;
+            OrphanOnly = builder.OrphanOnly;
             ProjectName = builder.Project;
             ProjectOwner = builder.Owner;
         }
 
         public string[] CleanReleases { get; private set; }
         public bool InvertedMatching { get; private set; }
+        public bool OrphanOnly { get; private set; }
         public string ProjectName { get; private set; }
         public string ProjectOwner { get; private set; }
 
@@ -37,6 +39,7 @@ namespace ReleaseCleaner.Invocation
             }
         }
         public bool InvertedMatching { get; private set; }
+        public bool OrphanOnly { get; private set; }
         public string Project { get; set; }
         public string Owner { get; set; }
         public ArgumentsBuilder() { }
@@ -77,6 +80,11 @@ namespace ReleaseCleaner.Invocation
         {
             // ignore multiple sets
             InvertedMatching = true;
+        }
+
+        internal void Orphans() 
+        {
+            OrphanOnly = true;
         }
 
         internal Arguments Build()

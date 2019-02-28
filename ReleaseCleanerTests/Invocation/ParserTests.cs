@@ -11,7 +11,7 @@ namespace ReleaseCleaner.Invocation
     [TestFixture]
     [Category("UnitTest")]
     [Category("Argument Parsing")]
-    public class ArgumentParserTests 
+    public class ParserTests 
     {
         [Test]
         [TestCase("")]
