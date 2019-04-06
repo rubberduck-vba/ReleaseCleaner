@@ -61,6 +61,11 @@ namespace ReleaseCleaner.Invocation
                             matchingBehavior.SetOwner(spec[0]);
                             matchingBehavior.SetProject(spec[1]);
                         }
+                        else
+                        {
+                            // Argument or flag is unknown!
+                            console.Write($"Argument or flag {actualArgs[i]} is unknown. Ignoring argument");
+                        }
                         break;
                 }
             }
