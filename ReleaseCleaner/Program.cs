@@ -1,5 +1,4 @@
-﻿using System;
-using Octokit;
+﻿using Octokit;
 using ReleaseCleaner.Invocation;
 
 namespace ReleaseCleaner
@@ -8,23 +7,29 @@ namespace ReleaseCleaner
     {
         static void Main(string[] args)
         {
-            var (arguments, authentication) = CommandLine.Parse(args, new ReleaseCleaner.Input.Console());
+            var console = new ReleaseCleaner.Input.Console();
+            var (arguments, authentication) = CommandLine.Parse(args, console);
             var client = new GitHubClient(new ProductHeaderValue("rubberduck-vba_ReleaseCleaner"));
             client.Credentials = authentication.Credentials;
 
             var cleaner = new Cleaner(client);
             var matches = cleaner.FindReleases(arguments);
 
-            // DEBUGGING OUTPUT
-            Console.WriteLine("Matching releases are:");
-            foreach (var hit in matches)
+            if (arguments.DryRun)
             {
-                Console.WriteLine($"{hit.Name}, pre: {hit.Prerelease}, draft: {hit.Draft}");
+                // DEBUGGING OUTPUT
+                console.Write("Matching releases are:");
+                foreach (var hit in matches)
+                {
+                    console.Write($"{hit.Name}, pre: {hit.Prerelease}, draft: {hit.Draft}");
+                }
             }
-
-            // FIXME are we sure we want to delete the tags?
-            // cleaner.DeleteTags(matches);
-            cleaner.DeleteReleases(matches, arguments);
+            else
+            {
+                // FIXME are we sure we want to delete the tags?
+                // cleaner.DeleteTags(matches);
+                cleaner.DeleteReleases(matches, arguments);
+            }
         }
     }
 }

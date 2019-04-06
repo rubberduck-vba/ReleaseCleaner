@@ -53,6 +53,10 @@ namespace ReleaseCleaner.Invocation
                     case "--orphans":
                         matchingBehavior.Orphans();
                         break;
+                    case "--dry-run":
+                    case "--dry":
+                        matchingBehavior.Dry();
+                        break;
                     default:
                         // attempt to parse given arg as owner/name
                         var spec = actualArgs[i].Split('/');
