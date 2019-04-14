@@ -1,4 +1,5 @@
 ﻿using Octokit;
+using ReleaseCleaner.Filtering;
 using ReleaseCleaner.Invocation;
 
 namespace ReleaseCleaner
@@ -12,8 +13,15 @@ namespace ReleaseCleaner
             var client = new GitHubClient(new ProductHeaderValue("rubberduck-vba_ReleaseCleaner"));
             client.Credentials = authentication.Credentials;
 
+            var filter = new ConditionalInversion(
+                new AndFilter(new IReleasePredicate[]{
+                    new ReleaseNameMatcher(),
+                    new OrphanMatcher(client)
+                })
+            );
+
             var cleaner = new Cleaner(client);
-            var matches = cleaner.FindReleases(arguments);
+            var matches = cleaner.FindReleases(arguments, filter);
 
             if (arguments.DryRun)
             {
