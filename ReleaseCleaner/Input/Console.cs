@@ -39,6 +39,11 @@ namespace ReleaseCleaner.Input
             IO.WriteLine();
             return password.ToString();
         }
+
+        public void Write(string output) 
+        {
+            IO.WriteLine(output);
+        }
     }
 
 }

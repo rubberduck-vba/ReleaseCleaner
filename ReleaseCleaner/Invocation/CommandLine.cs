@@ -53,6 +53,10 @@ namespace ReleaseCleaner.Invocation
                     case "--orphans":
                         matchingBehavior.Orphans();
                         break;
+                    case "--dry-run":
+                    case "--dry":
+                        matchingBehavior.Dry();
+                        break;
                     default:
                         // attempt to parse given arg as owner/name
                         var spec = actualArgs[i].Split('/');
@@ -60,6 +64,11 @@ namespace ReleaseCleaner.Invocation
                         {
                             matchingBehavior.SetOwner(spec[0]);
                             matchingBehavior.SetProject(spec[1]);
+                        }
+                        else
+                        {
+                            // Argument or flag is unknown!
+                            console.Write($"Argument or flag {actualArgs[i]} is unknown. Ignoring argument");
                         }
                         break;
                 }
