@@ -49,7 +49,7 @@ namespace ReleaseCleaner.Invocation
 
         internal bool IsValid()
         {
-            return CleanReleases.Any()
+            return (CleanReleases.Any() || OrphanOnly)
                 && Project != default
                 && Owner != default;
         }

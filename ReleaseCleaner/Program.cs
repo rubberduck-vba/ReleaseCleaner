@@ -25,7 +25,6 @@ namespace ReleaseCleaner
 
             if (arguments.DryRun)
             {
-                // DEBUGGING OUTPUT
                 console.Write("Matching releases are:");
                 foreach (var hit in matches)
                 {
@@ -34,8 +33,6 @@ namespace ReleaseCleaner
             }
             else
             {
-                // FIXME are we sure we want to delete the tags?
-                // cleaner.DeleteTags(matches);
                 cleaner.DeleteReleases(matches, arguments);
             }
         }

@@ -57,6 +57,7 @@ namespace ReleaseCleaner.Filtering
 
         public void Prepare(Arguments args) 
         {
+            wrappedPredicate.Prepare(args);
             performInversion = args.InvertedMatching;
         }
 
