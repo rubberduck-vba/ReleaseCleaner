@@ -2,6 +2,9 @@ using NUnit.Framework;
 using Octokit;
 using ReleaseCleaner.Invocation;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ReleaseCleaner.Filtering 
 {
@@ -43,6 +46,40 @@ namespace ReleaseCleaner.Filtering
             var filter = new ConditionalInversion(new ConstantValueFilter(wrappedResult));
             filter.Prepare(builder.Build());
             Assert.AreEqual(expected, filter.Matches(null));
+        }
+
+        [TestCase(typeof(AndFilter))]
+        [TestCase(typeof(OrFilter))]
+        public void BasicNaryFiltersDelegatePrepareCall(Type filterType) 
+        {
+            var args = ArgumentsMockData.BaseBuilder().Build();
+            
+            var wrappedFilter = new Mock<IReleasePredicate>();
+            var anotherFilter = new Mock<IReleasePredicate>();
+            wrappedFilter.Setup(f => f.Prepare(args)).Verifiable();
+            anotherFilter.Setup(f => f.Prepare(args)).Verifiable();
+
+            IEnumerable<IReleasePredicate> cast = new [] { wrappedFilter.Object, anotherFilter.Object }.ToList();
+
+            var filter = (IReleasePredicate) Activator.CreateInstance(filterType, cast);
+
+            filter.Prepare(args);
+
+            Mock.VerifyAll(wrappedFilter, anotherFilter);
+        }
+
+        [TestCase]
+        public void InversionFilterDelegatesPrepareCall()
+        {
+            var args = ArgumentsMockData.BaseBuilder().Build();
+            
+            var wrappedFilter = new Mock<IReleasePredicate>();
+            wrappedFilter.Setup(f => f.Prepare(args)).Verifiable();
+
+            var filter = new ConditionalInversion(wrappedFilter.Object);
+            filter.Prepare(args);
+
+            Mock.Verify(wrappedFilter);
         }
     }
 

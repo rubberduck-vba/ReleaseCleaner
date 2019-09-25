@@ -8,7 +8,7 @@ namespace ReleaseCleaner.Filtering
 {
     class ReleaseNameMatcher : IReleasePredicate
     {
-        private List<Regex> matchers;
+        private List<Regex> matchers = new List<Regex>();
         
         public void Prepare(Arguments arguments)
         {
