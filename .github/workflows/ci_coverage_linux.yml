@@ -1,0 +1,22 @@
+name: CI and Coverage on Linux
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '5.0.x'
+      - name: generate coverage
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=coverage.xml 
+      - uses: codecov/codecov-action@v2
+        with:
+          files: ReleaseCleanerTests/coverage.xml
