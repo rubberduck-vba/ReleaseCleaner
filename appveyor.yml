@@ -10,10 +10,10 @@ image:
 
 platform: Any CPU
 configuration: Release
-
 skip_tags: true
-build:
-  project: ReleaseCleaner.sln
+
+build_script:
+  - dotnet build ReleaseCleaner
 
 test_script:
   - dotnet test
