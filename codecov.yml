@@ -1,5 +1,7 @@
 codecov:
   require_ci_to_pass: yes
+  ci:
+    - '!appveyor'
 
 coverage:
   round: nearest
