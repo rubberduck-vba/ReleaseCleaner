@@ -1,11 +1,11 @@
-version: '0.0.1.{build}-alpha'
+version: '0.1.0.{build}-alpha'
 
 # enfoce CRLF fixing
 init:
   - git config --global core.autocrlf true
 
 image:
-  - Visual Studio 2019
+  - Visual Studio 2022
   - Ubuntu
 
 platform: Any CPU
@@ -23,7 +23,19 @@ skip_tags: true
 build:
   project: ReleaseCleaner.sln
 
-test:
-  assemblies:
-    only:
-      - ReleaseCleanerTests.dll
+test_script:
+  - dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=coverage.xml
+
+on_success:
+  - bash: |
+    curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
+
+    curl -Os https://uploader.codecov.io/latest/linux/codecov
+    curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+    curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+
+    gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+    shasum -a 256 -c codecov.SHA256SUM
+
+    chmod +x codecov
+    ./codecov -f */coverage.xml

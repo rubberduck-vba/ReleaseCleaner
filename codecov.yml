@@ -1,21 +1,20 @@
 codecov:
   require_ci_to_pass: yes
-  ci:
-    - !appveyor
 
 coverage:
   round: nearest
   precision: 2
   range: 60..90
   status:
-    only_pulls: true
     patch:
       default:
+        only_pulls: true
         informational: true
         target: 70
         threshold: 5
     project:
       default:
+        only_pulls: true
         informational: true
         target: 65
         threshold: 5
@@ -23,4 +22,4 @@ coverage:
 
 comment:
   layout: "flags, diff, files"
-  behaviour: once
+  behavior: once
